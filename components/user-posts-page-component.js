@@ -81,9 +81,6 @@ div.innerHTML = `<img src="${userPost[0].user.imageUrl}" class="posts-user-heade
 list.before(div)
 }
 
-// function likeAdd() {
-//   const likesAddChanges = document.querySelectorAll(".like-button");
-// }
 
 
   function likeButton() {
