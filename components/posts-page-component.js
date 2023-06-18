@@ -59,8 +59,6 @@ if({user} === !null) {
     })
       .join("")
   appEl.innerHTML = appHtml;
-  // userHeadApp.innerHTML = "";
-
   renderHeaderComponent({
     element: document.querySelector(".header-container"),
 
@@ -129,7 +127,6 @@ function likeButton() {
           }
           if (Number(foundIndex) === 0) {
             found.innerHTML = "Нравится: <strong>Вам <strong>"
-            // console.log(foundIndex)
             foundIndex = Number(foundIndex) + 1;
   
           }

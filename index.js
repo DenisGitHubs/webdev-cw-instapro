@@ -33,9 +33,6 @@ export const logout = () => {
   goToPage(POSTS_PAGE); 
 };
 
-/**
- * Включает страницу приложения
- */
 export const goToPage = (newPage, userId) => {
   if (
     [
@@ -48,7 +45,6 @@ export const goToPage = (newPage, userId) => {
   ) {
     if (newPage === ADD_POSTS_PAGE) {
 
-      // Если пользователь не авторизован, то отправляем его на авторизацию перед добавлением поста
       page = user ? ADD_POSTS_PAGE : AUTH_PAGE;
       return renderApp();
     }

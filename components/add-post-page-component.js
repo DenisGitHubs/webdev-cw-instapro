@@ -7,9 +7,7 @@ import { POSTS_PAGE } from "../routes.js";
 
 export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
   const render = () => {
-    let isLoginMode = true;
     let imageUrl = "";
-    // TODO: Реализовать страницу добавления поста
     const appHtml = `
 </div>
     <div class="form">
@@ -42,48 +40,13 @@ export function renderAddPostPageComponent({ appEl, onAddPostClick }) {
         imageUrl = newImageUrl;
       },
     });
-
-
-
-
-
-
     document.getElementById("add-button").addEventListener("click", () => {
-      // onAddPostClick({
-      //   description: "Описание картинки",
-      //   // imageUrl: "https://image.png",
-      // });
-      // let textFoto = document.getElementById('text-foto');
-      // addPost()
-      // console.log(imageUrl);
-      // uploadImage ({
-      //   // description: textFoto.value,
-      //   imageUrl
-      // });
       const description = document.getElementById("text-foto").value
-      console.log(description);
-
       addPost({ description, imageUrl, token: getToken() })
       goToPage(POSTS_PAGE)
-        // .catch((error) => {
-        //   console.warn(error);
-        //   setError(error.message);
-        // });
+
     });
-
-
-
-    // document.getElementById("go_back-button")("click", () => {
-    //   renderPostsPageComponent();
-    // })
   };
-  // const uploadImageAdd = renderUploadImageComponent({
-  //   element: appEl.querySelector(".upload-image-container"),
-  //   onImageUrlChange(newImageUrl) {
-  //     imageUrl = newImageUrl;
-  //   },
-  // });
-
   render();
 
 }
