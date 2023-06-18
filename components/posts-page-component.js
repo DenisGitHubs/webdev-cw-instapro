@@ -1,104 +1,71 @@
-import { USER_POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, AUTH_PAGE, POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
+import { formatDistanceToNow } from "date-fns";
+import { AddLikes, disLikes, getPosts } from "../api.js";
+import { getToken, user } from "../index.js";
 
-export function renderPostsPageComponent({ appEl }) {
-  // TODO: реализовать рендер постов из api
-  console.log("Актуальный список постов:", posts);
+export let checkToken = [];
 
-  /**
-   * TODO: чтобы отформатировать дату создания поста в виде "19 минут назад"
-   * можно использовать https://date-fns.org/v2.29.3/docs/formatDistanceToNow
-   */
-  const appHtml = `
-              <div class="page-container">
-                <div class="header-container"></div>
-                <ul class="posts">
+const ruLocale = require('date-fns/locale/ru')
+export function renderPostsPageComponent({ appEl, allUsersAndComments, ruLocale, checkToken }) {
+
+let userName = '';
+if({user} === !null) {
+  userName = {user}.user.name 
+} 
+  const appHtml =
+    allUsersAndComments.map((user) => {
+      let indexName = null;
+      let indexLikesLength = user.likes.length
+      let other = 0;
+      if (user.likes.length > 1) {
+        indexName = user.likes[0].name === userName ? user.likes[1].name : user.likes[0].name;
+        other = user.likes.length - 1;
+      }
+      if (user.likes.length === 1) {
+        indexName = user.likes[0].name === userName ? null : user.likes[0].name;
+      
+      }
+
+
+      const createDate = formatDistanceToNow(new Date(user.createdAt), '2015, 0, 1, 0, 0, 15', { locale: ruLocale });
+      return `
                   <li class="post">
-                    <div class="post-header" data-user-id="642d00329b190443860c2f31">
-                        <img src="https://www.imgonline.com.ua/examples/bee-on-daisy.jpg" class="post-header__user-image">
-                        <p class="post-header__user-name">Иван Иваныч</p>
+                    <div class="post-header" data-user-id=${user.user.id}>
+                        <img src=${user.user.imageUrl} class="post-header__user-image">
+                        <p class="post-header__user-name">${user.user.name}</p>
                     </div>
                     <div class="post-image-container">
-                      <img class="post-image" src="https://www.imgonline.com.ua/examples/bee-on-daisy.jpg">
+                      <img class="post-image" src=${user.imageUrl}>
                     </div>
                     <div class="post-likes">
-                      <button data-post-id="642d00579b190443860c2f32" class="like-button">
-                        <img src="./assets/images/like-active.svg">
+                      <button data-post-id=${user.id} data-like=${user.isLiked} class="like-button">
+                      "${user.isLiked ? '<img src="./assets/images/like-active.svg">' : '<img src="./assets/images/like-not-active.svg">'}"  
                       </button>
-                      <p class="post-likes-text">
-                        Нравится: <strong>2</strong>
+                      <p class="post-likes-text" data-index=${indexLikesLength} first-name=${indexName}>
+                        Нравится: <strong>${user.likes.length == 0 ? 0 : user.likes.length == 1 ? user.likes[0].name : `${user.likes[0].name} и ещё ${other}`}</strong>
                       </p>
                     </div>
                     <p class="post-text">
-                      <span class="user-name">Иван Иваныч</span>
-                      Ромашка, ромашка...
+                      <span class="user-name">${user.user.name}: </span>
+                      ${user.description}
                     </p>
                     <p class="post-date">
-                      19 минут назад
+                    ${createDate}
                     </p>
                   </li>
-                  <li class="post">
-                    <div class="post-header" data-user-id="6425602ce156b600f7858df2">
-                        <img src="https://storage.yandexcloud.net/skypro-webdev-homework-bucket/1680601502867-%25C3%2590%25C2%25A1%25C3%2590%25C2%25BD%25C3%2590%25C2%25B8%25C3%2590%25C2%25BC%25C3%2590%25C2%25BE%25C3%2590%25C2%25BA%2520%25C3%2591%25C2%258D%25C3%2590%25C2%25BA%25C3%2591%25C2%2580%25C3%2590%25C2%25B0%25C3%2590%25C2%25BD%25C3%2590%25C2%25B0%25202023-04-04%2520%25C3%2590%25C2%25B2%252014.04.29.png" class="post-header__user-image">
-                        <p class="post-header__user-name">Варварва Н.</p>
-                    </div>
-                  
-                    
-                    <div class="post-image-container">
-                      <img class="post-image" src="https://storage.yandexcloud.net/skypro-webdev-homework-bucket/1680670675451-%25C3%2590%25C2%25A1%25C3%2590%25C2%25BD%25C3%2590%25C2%25B8%25C3%2590%25C2%25BC%25C3%2590%25C2%25BE%25C3%2590%25C2%25BA%2520%25C3%2591%25C2%258D%25C3%2590%25C2%25BA%25C3%2591%25C2%2580%25C3%2590%25C2%25B0%25C3%2590%25C2%25BD%25C3%2590%25C2%25B0%25202023-03-31%2520%25C3%2590%25C2%25B2%252012.51.20.png">
-                    </div>
-                    <div class="post-likes">
-                      <button data-post-id="642cffed9b190443860c2f30" class="like-button">
-                        <img src="./assets/images/like-not-active.svg">
-                      </button>
-                      <p class="post-likes-text">
-                        Нравится: <strong>35</strong>
-                      </p>
-                    </div>
-                    <p class="post-text">
-                      <span class="user-name">Варварва Н.</span>
-                      Нарисовала картину, посмотрите какая красивая
-                    </p>
-                    <p class="post-date">
-                      3 часа назад
-                    </p>
-                  </li>
-                  <li class="post">
-                    <div class="post-header" data-user-id="6425602ce156b600f7858df2">
-                        <img src="https://storage.yandexcloud.net/skypro-webdev-homework-bucket/1680601502867-%25C3%2590%25C2%25A1%25C3%2590%25C2%25BD%25C3%2590%25C2%25B8%25C3%2590%25C2%25BC%25C3%2590%25C2%25BE%25C3%2590%25C2%25BA%2520%25C3%2591%25C2%258D%25C3%2590%25C2%25BA%25C3%2591%25C2%2580%25C3%2590%25C2%25B0%25C3%2590%25C2%25BD%25C3%2590%25C2%25B0%25202023-04-04%2520%25C3%2590%25C2%25B2%252014.04.29.png" class="post-header__user-image">
-                        <p class="post-header__user-name">Варварва Н.</p>
-                    </div>
-                  
-                    
-                    <div class="post-image-container">
-                      <img class="post-image" src="https://leonardo.osnova.io/97a160ca-76b6-5cba-87c6-84ef29136bb3/">
-                    </div>
-                    <div class="post-likes">
-                      <button data-post-id="642cf82e9b190443860c2f2b" class="like-button">
-                        <img src="./assets/images/like-not-active.svg">
-                      </button>
-                      <p class="post-likes-text">
-                        Нравится: <strong>0</strong>
-                      </p>
-                    </div>
-                    <p class="post-text">
-                      <span class="user-name">Варварва Н.</span>
-                      Голова
-                    </p>
-                    <p class="post-date">
-                      8 дней назад
-                    </p>
-                  </li>
-                </ul>
-              </div>`;
-
+`;
+    })
+      .join("")
   appEl.innerHTML = appHtml;
+  // userHeadApp.innerHTML = "";
 
   renderHeaderComponent({
     element: document.querySelector(".header-container"),
-  });
 
+  });
+  likeButton({checkToken});
   for (let userEl of document.querySelectorAll(".post-header")) {
     userEl.addEventListener("click", () => {
       goToPage(USER_POSTS_PAGE, {
@@ -106,4 +73,86 @@ export function renderPostsPageComponent({ appEl }) {
       });
     });
   }
+
 }
+
+
+function likeButton() {
+
+  let likesDivs = document.querySelectorAll(".post-likes");
+  for (const likeDiv of likesDivs) {
+    let found = likeDiv.querySelector(".post-likes-text")
+    let foundIndex = likeDiv.querySelector(".post-likes-text").getAttribute("data-index")
+    let firstName = likeDiv.querySelector(".post-likes-text").getAttribute("first-name")
+  
+  
+    let likeChange = likeDiv.querySelector(".like-button")
+
+    likeChange.addEventListener('click', () => {
+  
+  
+      let id = likeChange.getAttribute('data-post-id');
+      
+      if (likeChange.getAttribute('data-like') === "true") {
+        foundIndex = Number(foundIndex) - 1;
+        if (Number(foundIndex) === 0) {
+          found.innerHTML = `Нравится: 0`
+  
+        }
+        
+        if (Number(foundIndex) === 1) {
+          found.innerHTML = `Нравится:<strong> ${firstName} <strong>`
+  
+        }
+        if (Number(foundIndex) > 1) {
+          found.innerHTML = `Нравится:<strong> ${firstName} и еще ${Number(foundIndex) - 1} <strong>`
+          console.log(object);
+  
+  
+        }
+  
+  
+        disLikes({ id, token: getToken() })
+          likeChange.setAttribute('data-like', "false"),
+          likeChange.innerHTML = `<img src="./assets/images/like-not-active.svg">`;
+  
+  
+      } else {
+        checkToken = getToken();
+        if(checkToken)
+        {
+          if (Number(foundIndex) > 0) {
+            found.innerHTML = `Нравится:<strong> Вам и еще ${foundIndex} <strong>`
+  
+            foundIndex = Number(foundIndex) + 1;
+  
+          }
+          if (Number(foundIndex) === 0) {
+            found.innerHTML = "Нравится: <strong>Вам <strong>"
+            // console.log(foundIndex)
+            foundIndex = Number(foundIndex) + 1;
+  
+          }
+  
+  
+          AddLikes({
+            id, token: checkToken
+          })
+          likeChange.setAttribute('data-like', "true")
+          likeChange.innerHTML = `<img src="./assets/images/like-active.svg">`
+        }
+        AddLikes({
+          id, token: checkToken
+        })
+        .catch((Error) => {
+          console.error(Error);
+            goToPage(AUTH_PAGE);
+  
+        })
+      }
+  
+    });
+    
+  }
+  
+    }

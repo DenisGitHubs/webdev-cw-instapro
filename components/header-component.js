@@ -25,15 +25,25 @@ export function renderHeaderComponent({ element }) {
   element
     .querySelector(".add-or-login-button")
     .addEventListener("click", () => {
+
       if (user) {
+        if (document.getElementById("user-head")) {
+          document.getElementById("user-head").remove()
+        }
         goToPage(ADD_POSTS_PAGE);
       } else {
+        if (document.getElementById("user-head")) {
+          document.getElementById("user-head").remove()
+        }
         goToPage(AUTH_PAGE);
       }
     });
 
   element.querySelector(".logo").addEventListener("click", () => {
     goToPage(POSTS_PAGE);
+    if (document.getElementById("user-head")) {
+      document.getElementById("user-head").remove()
+    }
   });
 
   element.querySelector(".logout-button")?.addEventListener("click", logout);

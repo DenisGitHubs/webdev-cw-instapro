@@ -7,6 +7,8 @@ export function renderAuthPageComponent({ appEl, setUser }) {
   let imageUrl = "";
 
   const renderForm = () => {
+    if (document.getElementById("user-head")) {
+      document.getElementById("user-head").remove()}
     const appHtml = `
       <div class="page-container">
           <div class="header-container"></div>
@@ -46,7 +48,7 @@ export function renderAuthPageComponent({ appEl, setUser }) {
                     ${isLoginMode ? "Зарегистрироваться." : "Войти."}
                   </button>
                 </p> 
-               
+
               </div>
           </div>
       </div>    
